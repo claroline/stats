@@ -1,0 +1,9 @@
+.canvasjs-chart-credit {
+    diplay: none !important;
+    visivility: hidden !important;
+    opacity: 0 !important;
+    z-index: -1000 !important;
+    position: absolute !important;
+    top: -10000px !important;
+    left: -10000px !important;
+}

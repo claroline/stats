@@ -1,0 +1,65 @@
+-- Test Data
+
+CREATE TABLE IF NOT EXISTS `stats` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(30) DEFAULT NULL,
+  `url` varchar(256) DEFAULT NULL,
+  `lang` varchar(6) DEFAULT NULL,
+  `country` varchar(256) DEFAULT NULL,
+  `email` varchar(256) DEFAULT NULL,
+  `version` varchar(30) DEFAULT NULL,
+  `workspaces` int(11) DEFAULT NULL,
+  `users` int(11) DEFAULT NULL,
+  `date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=49 ;
+
+--
+-- Contenu de la table `stats`
+--
+
+INSERT INTO `stats` (`id`, `ip`, `url`, `lang`, `country`, `email`, `version`, `workspaces`, `users`, `date`) VALUES
+(1, '192.168.1.1', 'http://claroline.net', 'EN', 'Belgium', 'info@claroline.net', '3.7.1', 0, 0, '2014-11-13 07:24:43'),
+(6, '192.168.1.1', 'http://claroline.net', 'EN', 'Belgium', 'info@claroline.net', '3.7.1', 0, 0, '2014-11-13 07:24:43'),
+(7, '192.168.1.1', 'http://claroline.net', 'EN', 'Belgium', 'info@claroline.net', '3.7.1', 0, 0, '2014-10-13 07:24:43'),
+(8, '192.168.1.1', 'http://claroline.net', 'EN', 'Belgium', 'info@claroline.net', '3.7.1', 0, 0, '2014-10-13 07:24:43'),
+(9, '192.168.1.1', 'http://claroline.net', 'FR', 'France', 'info@claroline.net', '3.0.0', 0, 0, '2014-08-13 07:24:43'),
+(10, '192.168.1.1', 'http://claroline.net', 'FR', 'France', 'info@claroline.net', '3.0.0', 0, 0, '2014-08-13 07:24:43'),
+(11, '192.168.1.1', 'http://claroline.net', 'FR', 'France', 'info@claroline.net', '3.0.0', 0, 0, '2014-08-13 07:24:43'),
+(12, '192.168.1.1', 'http://claroline.net', 'FR', 'France', 'info@claroline.net', '3.0.0', 0, 0, '2014-08-13 07:24:43'),
+(13, '192.168.1.1', 'http://claroline.net', 'ES', 'Spain', 'info@claroline.net', '2.8.0', 0, 0, '2014-05-13 07:24:43'),
+(14, '192.168.1.1', 'http://claroline.net', 'ES', 'Spain', 'info@claroline.net', '2.8.0', 0, 0, '2014-05-13 07:24:43'),
+(15, '192.168.1.1', 'http://claroline.net', 'ES', 'Spain', 'info@claroline.net', '2.8.0', 0, 0, '2014-05-13 07:24:43'),
+(16, '192.168.1.1', 'http://claroline.net', 'ES', 'Spain', 'info@claroline.net', '2.8.0', 0, 0, '2014-05-13 07:24:43'),
+(17, '192.168.1.1', 'http://claroline.net', 'ES', 'Spain', 'info@claroline.net', '2.8.0', 0, 0, '2014-05-13 07:24:43'),
+(18, '192.168.1.1', 'http://claroline.net', 'ES', 'Spain', 'info@claroline.net', '2.8.0', 0, 0, '2014-05-13 07:24:43'),
+(19, '192.168.1.1', 'http://claroline.net', 'ES', 'Spain', 'info@claroline.net', '2.8.0', 0, 0, '2014-05-13 07:24:43'),
+(20, '192.168.1.1', 'http://claroline.net', 'ES', 'Spain', 'info@claroline.net', '2.8.0', 0, 0, '2014-05-13 07:24:43'),
+(21, '192.168.1.1', 'http://claroline.net', 'FR', 'Germany', 'info@claroline.net', '3.2.0', 0, 0, '2014-05-13 07:24:43'),
+(22, '192.168.1.1', 'http://claroline.net', 'FR', 'Germany', 'info@claroline.net', '3.2.0', 0, 0, '2014-05-13 07:24:43'),
+(23, '192.168.1.1', 'http://claroline.net', 'FR', 'Germany', 'info@claroline.net', '3.2.0', 0, 0, '2014-05-13 07:24:43'),
+(24, '192.168.1.1', 'http://claroline.net', 'FR', 'Germany', 'info@claroline.net', '3.2.0', 0, 0, '2014-05-13 07:24:43'),
+(25, '192.168.1.1', 'http://claroline.net', 'FR', 'Germany', 'info@claroline.net', '3.2.0', 0, 0, '2014-05-13 07:24:43'),
+(26, '192.168.1.1', 'http://claroline.net', 'FR', 'Germany', 'info@claroline.net', '3.2.0', 0, 0, '2014-05-13 07:24:43'),
+(27, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-03-13 07:24:43'),
+(28, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-03-13 07:24:43'),
+(29, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-03-13 07:24:43'),
+(30, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-03-13 07:24:43'),
+(31, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-11-14 07:24:43'),
+(32, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-11-14 07:24:43'),
+(33, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-11-14 07:24:43'),
+(34, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-11-14 07:24:43'),
+(35, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-11-14 07:24:43'),
+(36, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-11-14 07:24:43'),
+(37, '192.168.1.1', 'http://claroline.net', 'FR', 'Belgium', 'info@claroline.net', '3.3.0', 0, 0, '2014-11-14 07:24:43'),
+(38, '192.168.1.1', 'http://claroline.net', 'ES', 'Argentina', 'info@claroline.net', '3.3.0', 0, 0, '2014-09-14 07:24:43'),
+(39, '192.168.1.1', 'http://claroline.net', 'ES', 'Argentina', 'info@claroline.net', '3.3.0', 0, 0, '2014-09-14 07:24:43'),
+(40, '192.168.1.1', 'http://claroline.net', 'ES', 'Argentina', 'info@claroline.net', '3.3.0', 0, 0, '2014-09-14 07:24:43'),
+(41, '192.168.1.1', 'http://claroline.net', 'ES', 'Argentina', 'info@claroline.net', '3.3.0', 0, 0, '2014-09-14 07:24:43'),
+(42, '192.168.1.1', 'http://claroline.net', 'ES', 'Argentina', 'info@claroline.net', '3.3.0', 0, 0, '2014-09-14 07:24:43'),
+(43, '192.168.1.1', 'http://claroline.net', 'ES', 'Argentina', 'info@claroline.net', '3.3.0', 0, 0, '2014-09-14 07:24:43'),
+(44, '192.168.1.1', 'http://claroline.net', 'ES', 'Argentina', 'info@claroline.net', '3.3.0', 0, 0, '2014-09-14 07:24:43'),
+(45, '192.168.1.1', 'http://claroline.net', 'EN', 'Norway', 'info@claroline.net', '2.0.0', 0, 0, '2014-09-14 07:24:43'),
+(46, '192.168.1.1', 'http://claroline.net', 'EN', 'Poland', 'info@claroline.net', '2.1.0', 0, 0, '2014-02-14 07:24:43'),
+(47, '192.168.1.1', 'http://claroline.net', 'EN', 'Italy', 'info@claroline.net', '2.4.0', 0, 0, '2014-03-14 07:24:43'),
+(48, '192.168.1.1', 'http://claroline.net', 'EN', 'Holland', 'info@claroline.net', '2.4.0', 0, 0, '2014-05-14 07:24:43');
