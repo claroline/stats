@@ -21,7 +21,7 @@ $_POST['date'] = '2014-09-17 07:24:43';
 
 if (
     $stats->checkParameters(
-        $_POST, array('ip', 'url', 'lang', 'country', 'email', 'version', 'workspaces', 'users', 'date')
+        $_POST, array('ip', 'url', 'lang', 'country', 'email', 'version', 'workspaces', 'users')
     ) AND
     filter_var($_POST['ip'], FILTER_VALIDATE_IP) AND
     filter_var($_POST['url'], FILTER_VALIDATE_URL) AND
@@ -29,7 +29,6 @@ if (
     preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/', $_POST['version']) AND
     is_numeric($_POST['workspaces']) AND
     is_numeric($_POST['users']) AND
-    $stats->validateDate($_POST['date']) AND
     $stats->insert(
         $_POST['ip'],
         $_POST['url'],
@@ -38,8 +37,7 @@ if (
         $_POST['email'],
         $_POST['version'],
         $_POST['workspaces'],
-        $_POST['users'],
-        $_POST['date']
+        $_POST['users']
     )->errorCode()
 ) {
     echo 'true';
