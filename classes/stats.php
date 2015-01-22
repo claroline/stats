@@ -28,7 +28,20 @@ class Stats
     /**
      * Insert into stats, no ned mysql_real_escape_string cause PDO prepare query
      */
-    public function insert($ip, $url, $lang, $country, $email, $version, $workspaces, $users, $date = null)
+    public function insert(
+        $ip,
+        $name,
+        $url,
+        $lang,
+        $country,
+        $email,
+        $version,
+        $workspaces,
+        $users,
+        $statsType,
+        $token,
+        $date = null
+    )
     {
         if (!$date or ($date and !$this->validateDate($date))) {
             $date = date("Y-m-d H:i:s");
@@ -37,8 +50,8 @@ class Stats
 
         return $this->db->query(
             "INSERT INTO `stats` (
-                `id`, `ip`, `url`, `lang`, `country`, `email`, `version`, `workspaces`, `users`, `date`
-            ) VALUES (NULL, '$ip', '$url', '$lang', '$country', '$email', '$version', '$workspaces', '$users', '$date')"
+                `id`, `ip`, `platform_name`, `url`, `lang`, `country`, `email`, `version`, `workspaces`, `users`, `stats_type`, `token`, `date`
+            ) VALUES (NULL, '$ip', '$name', '$url', '$lang', '$country', '$email', '$version', '$workspaces', '$users', '$statsType', '$token', '$date')"
         );
     }
 
