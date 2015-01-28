@@ -24,4 +24,6 @@
     </td>
     <td><?php $stats->show($workspaces); ?></td>
     <td><?php $stats->show($users); ?></td>
+    <td><?php $stats->show($stats_type); ?></td>
+    <td><?php $stats->show($active); ?></td>
 </tr>

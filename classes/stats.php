@@ -10,6 +10,7 @@ class Stats
     public function __construct($config)
     {
         $database = new DataBase($config);
+
         if ($database->connect()) {
             $this->db = $database;
         }
@@ -21,7 +22,11 @@ class Stats
     public function alive()
     {
         if ($this->db) {
+
             return true;
+        } else {
+
+            return false;
         }
     }
 
@@ -37,6 +42,7 @@ class Stats
         $email,
         $version,
         $workspaces,
+        $personalWorkspaces,
         $users,
         $statsType,
         $token,
@@ -48,10 +54,50 @@ class Stats
         }
         extract($this->array2utf8(get_defined_vars()));
 
+        $platforms = $this->db->query(
+            "SELECT *
+             FROM `stats_platform`
+             WHERE `url` = '$url'"
+        )->fetchAll(PDO::FETCH_ASSOC);
+
+        if (count($platforms) === 0) {
+            $this->insertPlatform(
+                $ip,
+                $name,
+                $url,
+                $lang,
+                $country,
+                $email,
+                $version,
+                $workspaces,
+                $personalWorkspaces,
+                $users,
+                $statsType,
+                $token,
+                $date
+            );
+        } else {
+            $this->updatePlatform(
+                $ip,
+                $name,
+                $url,
+                $lang,
+                $country,
+                $email,
+                $version,
+                $workspaces,
+                $personalWorkspaces,
+                $users,
+                $statsType,
+                $token,
+                $date
+            );
+        }
+
         return $this->db->query(
             "INSERT INTO `stats` (
-                `id`, `ip`, `platform_name`, `url`, `lang`, `country`, `email`, `version`, `workspaces`, `users`, `stats_type`, `token`, `date`
-            ) VALUES (NULL, '$ip', '$name', '$url', '$lang', '$country', '$email', '$version', '$workspaces', '$users', '$statsType', '$token', '$date')"
+                `id`, `ip`, `platform_name`, `url`, `lang`, `country`, `email`, `version`, `workspaces`, `personal_workspaces`, `users`, `stats_type`, `date`
+            ) VALUES (NULL, '$ip', '$name', '$url', '$lang', '$country', '$email', '$version', '$workspaces', '$personalWorkspaces', '$users', '$statsType', '$date')"
         );
     }
 
@@ -61,12 +107,16 @@ class Stats
     public function getStats()
     {
         if ($this->db) {
-            return $this->db->query('SELECT * FROM `stats` ORDER BY `date` DESC LIMIT 500')->fetchAll(PDO::FETCH_ASSOC);
+
+            return $this->db->query('SELECT * FROM `stats_platform` ORDER BY `date` DESC LIMIT 500')->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+
+            return null;
         }
     }
 
     /**
-     * Count field, as version, lang, country or month
+     * Count field, as version, lang, country or month from 'stats' table
      */
     public function countField($field, $timed = false, $year = null)
     {
@@ -85,7 +135,147 @@ class Stats
         }
 
         if ($this->db) {
+
             return $this->array2utf8($this->db->query($query)->fetchAll(PDO::FETCH_ASSOC));
+        } else {
+
+            return null;
+        }
+    }
+
+    /**
+     * Count field, as version, lang, country or month from 'stats_platform' table
+     */
+    public function countPlatformField($field, $timed = false, $year = null)
+    {
+        $query = "
+            SELECT `$field`, COUNT(*) AS `number`
+            FROM `stats_platform`
+            GROUP BY `$field`
+            ORDER BY `number` DESC
+        ";
+
+        if ($field === 'month') {
+            $query = "
+                SELECT MONTHNAME(`date`) AS `month`, COUNT(*) AS `number`
+                FROM `stats_platform`
+                GROUP BY `month`
+                ORDER BY `number` DESC
+            ";
+        } else if ($timed) {
+            $year = !$year ? date("Y") : $year;
+
+            $query = "
+                SELECT DATE_FORMAT(`date`, '%b') AS `month`, `$field`, COUNT(*) as `number`
+                FROM `stats_platform`
+                WHERE YEAR(`date`) = '$year'
+                GROUP BY `month`, `$field`
+                ORDER BY `month`
+            ";
+        }
+
+        if ($this->db) {
+
+            return $this->array2utf8($this->db->query($query)->fetchAll(PDO::FETCH_ASSOC));
+        } else {
+
+            return null;
+        }
+    }
+
+    public function countNbUpdatedPlaforms()
+    {
+        $nbUpdated = 0;
+
+        if ($this->db) {
+            $query = "
+                SELECT COUNT(DISTINCT `url`) as `total`
+                FROM `stats`
+                WHERE `stats_type` = 3
+                AND `url` IN (
+                    SELECT `url`
+                    FROM `stats_platform`
+                )
+            ";
+            $result = $this->db->query($query)->fetch(PDO::FETCH_ASSOC);
+            
+            if (isset($result['total']) && is_numeric($result['total'])) {
+
+                $nbUpdated = $result['total'];
+            }
+        }
+
+        return $nbUpdated;
+    }
+
+    public function computeSumByDate($field, $year = null)
+    {
+        $year = !$year ? date("Y") : $year;
+
+        $query = "
+            SELECT DATE_FORMAT(`date`, '%b') AS `month`, SUM(`$field`) as `number`
+            FROM `stats` s
+            WHERE YEAR(s.`date`) = '$year'
+            AND NOT EXISTS (
+                SELECT *
+                FROM `stats` ss
+                WHERE s.`url` = ss.`url`
+                AND YEAR(ss.`date`) = '$year'
+                AND MONTH(ss.`date`) = MONTH(s.`date`)
+                AND ss.`date` > s.`date`
+             )
+            GROUP BY `month`
+            ORDER BY `month`
+        ";
+
+        if ($this->db) {
+
+            return $this->array2utf8($this->db->query($query)->fetchAll(PDO::FETCH_ASSOC));
+        }  else {
+
+            return null;
+        }
+    }
+
+    public function countNbFieldByDate($field, $year = null)
+    {
+        $year = !$year ? date("Y") : $year;
+
+        $query = "
+            SELECT DATE_FORMAT(`date`, '%b') AS `month`, `$field`, COUNT(DISTINCT `url`) as `number`
+            FROM `stats`
+            WHERE YEAR(`date`) = '$year'
+            GROUP BY `month`, `$field`
+            ORDER BY `month`
+        ";
+
+        if ($this->db) {
+
+            return $this->array2utf8($this->db->query($query)->fetchAll(PDO::FETCH_ASSOC));
+        } else {
+
+            return null;
+        }
+    }
+
+    public function countNbPlatformsByDate($year = null)
+    {
+        $year = !$year ? date("Y") : $year;
+
+        $query = "
+            SELECT DATE_FORMAT(`date`, '%b') AS `month`, COUNT(DISTINCT `url`) as `number`
+            FROM `stats`
+            WHERE YEAR(`date`) = '$year'
+            GROUP BY `month`
+            ORDER BY `month`
+        ";
+
+        if ($this->db) {
+
+            return $this->array2utf8($this->db->query($query)->fetchAll(PDO::FETCH_ASSOC));
+        } else {
+
+            return null;
         }
     }
 
@@ -96,8 +286,33 @@ class Stats
     {
         $array = array();
 
-        foreach ($this->countField($field, true, $year) as $item) {
-            $array[$item[$field]][$item['month']] = $item['number'];
+        switch ($field) {
+
+            case 'users':
+            case 'workspaces':
+
+                foreach ($this->computeSumByDate($field, $year) as $item) {
+                    $array[$field][$item['month']] = $item['number'];
+                }
+                break;
+            case 'platforms':
+
+                foreach ($this->countNbPlatformsByDate($year) as $item) {
+                    $array[$field][$item['month']] = $item['number'];
+                }
+                break;
+            case 'country':
+            case 'version':
+
+                foreach ($this->countNbFieldByDate($field, $year) as $item) {
+                    $array[$item[$field]][$item['month']] = $item['number'];
+                }
+                break;
+            default:
+
+                foreach ($this->countField($field, true, $year) as $item) {
+                    $array[$item[$field]][$item['month']] = $item['number'];
+                }
         }
 
         uasort($array, array('Stats', 'timedSort'));
@@ -149,10 +364,34 @@ class Stats
     public function total()
     {
         if ($this->db) {
+
             return $this->db->query('SELECT count(*) AS `total` FROM `stats`')->fetch(PDO::FETCH_ASSOC)['total'];
         }
 
         return 0;
+    }
+
+    /**
+     * Get total number of entries
+     */
+    public function platformTotal()
+    {
+        $total = 1;
+
+        if ($this->db) {
+            $query = '
+                SELECT count(*) AS `total`
+                FROM `stats_platform`
+            ';
+            $result = $this->db->query($query)->fetch(PDO::FETCH_ASSOC);
+
+            if (isset($result['total']) && is_numeric($result['total'])) {
+
+                $total = $result['total'];
+            }
+        }
+
+        return $total;
     }
 
     /**
@@ -170,6 +409,7 @@ class Stats
     {
         foreach ($args as $arg) {
             if (!(isset($array[$arg]) && $array[$arg] !== '')) {
+
                 return false;
             }
         }
@@ -212,5 +452,71 @@ class Stats
         }
 
         return $string;
+    }
+
+    private function insertPlatform(
+        $ip,
+        $name,
+        $url,
+        $lang,
+        $country,
+        $email,
+        $version,
+        $workspaces,
+        $personalWorkspaces,
+        $users,
+        $statsType,
+        $token,
+        $date
+    )
+    {
+        if ($this->db) {
+            extract($this->array2utf8(get_defined_vars()));
+
+            $this->db->query(
+                "INSERT INTO `stats_platform` (
+                    `id`, `ip`, `platform_name`, `url`, `lang`, `country`, `email`, `version`, `workspaces`, `personal_workspaces`,`users`, `stats_type`, `token`, `active`, `date`
+                ) VALUES (NULL, '$ip', '$name', '$url', '$lang', '$country', '$email', '$version', '$workspaces', '$personalWorkspaces', '$users', '$statsType', '$token', '1','$date')"
+            );
+        }
+    }
+
+    private function updatePlatform(
+        $ip,
+        $name,
+        $url,
+        $lang,
+        $country,
+        $email,
+        $version,
+        $workspaces,
+        $personalWorkspaces,
+        $users,
+        $statsType,
+        $token,
+        $date
+    )
+    {
+        if ($this->db) {
+            extract($this->array2utf8(get_defined_vars()));
+
+            $this->db->query(
+                "UPDATE `stats_platform`
+                 SET `ip` = '$ip',
+                     `platform_name` = '$name',
+                     `lang` = '$lang',
+                     `country` = '$country',
+                     `email` = '$email',
+                     `version` = '$version',
+                     `workspaces` = '$workspaces',
+                     `personal_workspaces` = '$personalWorkspaces',
+                     `users` = '$users',
+                     `stats_type` = '$statsType',
+                     `token` = '$token',
+                     `active` = '1',
+                     `date` = '$date'
+                 WHERE `url` = '$url'"
+            );
+        }
     }
 }

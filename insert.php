@@ -17,16 +17,18 @@ if ($stats->checkParameters(
             'email',
             'version',
             'workspaces',
+            'personal_workspaces',
             'users',
             'stats_type',
             'token'
         )
     ) &&
     filter_var($_POST['ip'], FILTER_VALIDATE_IP) &&
-    filter_var($_POST['url'], FILTER_VALIDATE_URL) &&
+//    filter_var($_POST['url'], FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) &&
     filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) &&
     preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/', $_POST['version']) &&
     is_numeric($_POST['workspaces']) &&
+    is_numeric($_POST['personal_workspaces']) &&
     is_numeric($_POST['users']) &&
     is_numeric($_POST['stats_type'])) {
 
@@ -39,6 +41,7 @@ if ($stats->checkParameters(
         $_POST['email'],
         $_POST['version'],
         $_POST['workspaces'],
+        $_POST['personal_workspaces'],
         $_POST['users'],
         $_POST['stats_type'],
         $_POST['token']
