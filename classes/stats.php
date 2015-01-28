@@ -427,6 +427,47 @@ class Stats
         return $dateTime && $dateTime->format($format) == $date;
     }
 
+    public function checkActiveRegisteredPlatforms()
+    {
+        if ($this->db) {
+            $query = '
+                SELECT *
+                FROM `stats_platform`
+                WHERE `active` = 1
+            ';
+            $results = $this->array2utf8(
+                $this->db->query($query)->fetchAll(PDO::FETCH_ASSOC)
+            );
+
+            foreach ($results as $result) {
+                $token = $result['token'];
+                $url = $result['url'];
+                $updateUrl = $url .
+                    '/admin/parameters/send/datas/token/' .
+                    $token;
+
+                $curl = curl_init($updateUrl);
+                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+                curl_setopt($curl, CURLOPT_HEADER, 0);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                curl_exec($curl);
+            }
+        }
+    }
+
+    public function deactivatePlatform($url)
+    {
+        if ($this->db) {
+            extract($this->array2utf8(get_defined_vars()));
+
+            $this->db->query(
+                "UPDATE `stats_platform`
+                 SET `active` = '0'
+                 WHERE `url` = '$url'"
+            );
+        }
+    }
+
     /**
      * Array to utf8
      */
