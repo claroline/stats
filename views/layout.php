@@ -48,6 +48,15 @@
             <div class="col-sm-6">
                 <div id="countryTimed" style="height: 250px; width: 100%"></div>
             </div>
+            <div class="col-sm-6">
+                <div id="platformsTimed" style="height: 250px; width: 100%"></div>
+            </div>
+            <div class="col-sm-6">
+                <div id="usersTimed" style="height: 250px; width: 100%"></div>
+            </div>
+            <div class="col-sm-6">
+                <div id="workspacesTimed" style="height: 250px; width: 100%"></div>
+            </div>
         </div>
     </div>
     <br>
@@ -62,6 +71,8 @@
             <th>CoreBundle version</th>
             <th>Workspaces</th>
             <th>Users</th>
+            <th>Type</th>
+            <th>Active</th>
         </tr>
         <?php
         foreach ($stats->getStats() as $stat) {
@@ -74,27 +85,39 @@
     <script src="assets/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/js/stats.js"></script>
     <script type="text/javascript">
-        var version = <?php echo json_encode($stats->countField('version')); ?>;
-        var country = <?php echo json_encode($stats->countField('country')); ?>;
-        var lang = <?php echo json_encode($stats->countField('lang')); ?>;
-        var month = <?php echo json_encode($stats->countField('month')); ?>;
-        var total = <?php echo $stats->total(); ?>;
+        var version = <?php echo json_encode($stats->countPlatformField('version')); ?>;
+        var country = <?php echo json_encode($stats->countPlatformField('country')); ?>;
+        var lang = <?php echo json_encode($stats->countPlatformField('lang')); ?>;
+        var nbUpdatedPlaforms = <?php echo $stats->countNbUpdatedPlaforms(); ?>;
+        var total = <?php echo $stats->platformTotal(); ?>;
         var year = <?php echo $year; ?>;
 
         var versionTimed = <?php echo json_encode($stats->timed('version', $year)); ?>;
         var countryTimed = <?php echo json_encode($stats->timed('country', $year)); ?>;
+        var nbUsersTimed = <?php echo json_encode($stats->timed('users', $year)); ?>;
+        var nbWorkspacesTimed = <?php echo json_encode($stats->timed('workspaces', $year)); ?>;
+        var nbPlatformsTimed = <?php echo json_encode($stats->timed('platforms', $year)); ?>;
 
         window.onload = function () {
             new CanvasJS.Chart('version', new stat('version', 'Core Version').doughnut(version, total)).render();
             new CanvasJS.Chart('country', new stat('country', 'Countries').doughnut(country, total)).render();
             new CanvasJS.Chart('lang', new stat('lang', 'Languages').doughnut(lang, total)).render();
-            new CanvasJS.Chart('month', new stat('month', 'Installed/Updated').doughnut(month, total)).render();
+            new CanvasJS.Chart('month', new stat('month', 'Installed/Updated').doughnut(nbUpdatedPlaforms, total, 'value')).render();
 
             new CanvasJS.Chart(
                 'versionTimed', new stat('versionTimed', 'Core Versions ' + year).spline(versionTimed)
             ).render();
             new CanvasJS.Chart(
                 'countryTimed', new stat('countryTimed', 'Countries ' + year).spline(countryTimed)
+            ).render();
+            new CanvasJS.Chart(
+                'platformsTimed', new stat('platformsTimed', 'Number of platforms ' + year).column(nbPlatformsTimed, '#7F6084')
+            ).render();
+            new CanvasJS.Chart(
+                'usersTimed', new stat('usersTimed', 'Number of users ' + year).column(nbUsersTimed, '#369EAD')
+            ).render();
+            new CanvasJS.Chart(
+                'workspacesTimed', new stat('workspacesTimed', 'Number of workspaces ' + year).column(nbWorkspacesTimed, '#C24642')
             ).render();
         }
 

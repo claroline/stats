@@ -2,16 +2,42 @@
 
 DROP TABLE IF EXISTS `stats`;
 
-CREATE TABLE `stats` (
+CREATE TABLE IF NOT EXISTS `stats` (
   `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
   `ip` VARCHAR(30) NOT NULL,
-  `url` VARCHAR(256) NOT NULL,
+  `platform_name` VARCHAR(255) NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
   `lang` VARCHAR(6) NOT NULL,
-  `country` VARCHAR(256) NOT NULL,
-  `email` VARCHAR(256) NOT NULL,
+  `country` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
   `version` VARCHAR(30) NOT NULL,
   `workspaces` INTEGER NOT NULL,
+  `personal_workspaces` INTEGER NOT NULL,
   `users` INTEGER NOT NULL,
+  `stats_type` INTEGER NOT NULL,
   `date` DATETIME NOT NULL,
   PRIMARY KEY (`id`)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;
+
+DROP TABLE IF EXISTS `stats_platform`;
+
+CREATE TABLE IF NOT EXISTS `stats_platform` (
+  `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
+  `ip` VARCHAR(30) NOT NULL,
+  `platform_name` VARCHAR(255) NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
+  `lang` VARCHAR(6) NOT NULL,
+  `country` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `version` VARCHAR(30) NOT NULL,
+  `workspaces` INTEGER NOT NULL,
+  `personal_workspaces` INTEGER NOT NULL,
+  `users` INTEGER NOT NULL,
+  `stats_type` INTEGER NOT NULL,
+  `token` VARCHAR(255),
+  `active` TINYINT(1) NOT NULL,
+  `date` DATETIME NOT NULL,
+  PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;
+
+ALTER TABLE `stats_platform` ADD UNIQUE (`url`);
