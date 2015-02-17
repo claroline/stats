@@ -455,7 +455,7 @@ class Stats
         }
     }
 
-    public function deactivatePlatform($url)
+    public function deactivatePlatform($id)
     {
         if ($this->db) {
             extract($this->array2utf8(get_defined_vars()));
@@ -463,7 +463,19 @@ class Stats
             $this->db->query(
                 "UPDATE `stats_platform`
                  SET `active` = '0'
-                 WHERE `url` = '$url'"
+                 WHERE `id` = $id"
+            );
+        }
+    }
+
+    public function deletePlatform($id)
+    {
+        if ($this->db) {
+            extract($this->array2utf8(get_defined_vars()));
+
+            $this->db->query(
+                "DELETE FROM `stats_platform`
+                 WHERE `id` = $id"
             );
         }
     }
