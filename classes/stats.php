@@ -166,17 +166,38 @@ class Stats
      */
     public function countField($field, $timed = false, $year = null)
     {
-        $query = "SELECT `$field`, COUNT(*) AS `number` FROM `stats` GROUP BY `$field` ORDER BY `number` DESC";
+        $query = "
+            SELECT `$field`, COUNT(*) AS `number`
+            FROM `stats`
+            WHERE NOT (
+                UPPER(`url`) LIKE '%LOCALHOST%'
+                OR `url` LIKE '%127.0.0.1%'
+            )
+            GROUP BY `$field`
+            ORDER BY `number` DESC
+        ";
 
         if ($field === 'month') {
             $query = "SELECT MONTHNAME(`date`) AS `month`, COUNT(*) AS `number`
-                      FROM `stats` GROUP BY `month` ORDER BY `number` DESC";
+                      FROM `stats`
+                      WHERE NOT (
+                          UPPER(`url`) LIKE '%LOCALHOST%'
+                          OR `url` LIKE '%127.0.0.1%'
+                      )
+                      GROUP BY `month`
+                      ORDER BY `number` DESC";
         } else if ($timed) {
             $year = !$year ? date("Y") : $year;
 
             $query = "
-                SELECT DATE_FORMAT(`date`, '%b') AS `month`, `$field`, COUNT(*) as `number` FROM `stats`
-                WHERE YEAR(`date`) = '$year' GROUP BY `month`, `$field` ORDER BY `month`
+                SELECT DATE_FORMAT(`date`, '%b') AS `month`, `$field`, COUNT(*) as `number`
+                FROM `stats`
+                WHERE YEAR(`date`) = '$year'
+                AND NOT (
+                    UPPER(`url`) LIKE '%LOCALHOST%'
+                    OR `url` LIKE '%127.0.0.1%'
+                )
+                GROUP BY `month`, `$field` ORDER BY `month`
             ";
         }
 
@@ -197,6 +218,10 @@ class Stats
         $query = "
             SELECT `$field`, COUNT(*) AS `number`
             FROM `stats_platform`
+            WHERE NOT (
+                UPPER(`url`) LIKE '%LOCALHOST%'
+                OR `url` LIKE '%127.0.0.1%'
+            )
             GROUP BY `$field`
             ORDER BY `number` DESC
         ";
@@ -205,6 +230,10 @@ class Stats
             $query = "
                 SELECT MONTHNAME(`date`) AS `month`, COUNT(*) AS `number`
                 FROM `stats_platform`
+                WHERE NOT (
+                    UPPER(`url`) LIKE '%LOCALHOST%'
+                    OR `url` LIKE '%127.0.0.1%'
+                )
                 GROUP BY `month`
                 ORDER BY `number` DESC
             ";
@@ -215,6 +244,10 @@ class Stats
                 SELECT DATE_FORMAT(`date`, '%b') AS `month`, `$field`, COUNT(*) as `number`
                 FROM `stats_platform`
                 WHERE YEAR(`date`) = '$year'
+                AND NOT (
+                    UPPER(`url`) LIKE '%LOCALHOST%'
+                    OR `url` LIKE '%127.0.0.1%'
+                )
                 GROUP BY `month`, `$field`
                 ORDER BY `month`
             ";
@@ -241,6 +274,10 @@ class Stats
                 AND `url` IN (
                     SELECT `url`
                     FROM `stats_platform`
+                    WHERE NOT (
+                        UPPER(`url`) LIKE '%LOCALHOST%'
+                        OR `url` LIKE '%127.0.0.1%'
+                    )
                 )
             ";
             $result = $this->db->query($query)->fetch(PDO::FETCH_ASSOC);
@@ -269,7 +306,11 @@ class Stats
                 AND YEAR(ss.`date`) = '$year'
                 AND MONTH(ss.`date`) = MONTH(s.`date`)
                 AND ss.`date` > s.`date`
-             )
+            )
+            AND NOT (
+                UPPER(`url`) LIKE '%LOCALHOST%'
+                OR `url` LIKE '%127.0.0.1%'
+            )
             GROUP BY `month`
             ORDER BY `month`
         ";
@@ -291,6 +332,10 @@ class Stats
             SELECT DATE_FORMAT(`date`, '%b') AS `month`, `$field`, COUNT(DISTINCT `url`) as `number`
             FROM `stats`
             WHERE YEAR(`date`) = '$year'
+            AND NOT (
+                UPPER(`url`) LIKE '%LOCALHOST%'
+                OR `url` LIKE '%127.0.0.1%'
+            )
             GROUP BY `month`, `$field`
             ORDER BY `month`
         ";
@@ -312,6 +357,10 @@ class Stats
             SELECT DATE_FORMAT(`date`, '%b') AS `month`, COUNT(DISTINCT `url`) as `number`
             FROM `stats`
             WHERE YEAR(`date`) = '$year'
+            AND NOT (
+                UPPER(`url`) LIKE '%LOCALHOST%'
+                OR `url` LIKE '%127.0.0.1%'
+            )
             GROUP BY `month`
             ORDER BY `month`
         ";
@@ -410,8 +459,16 @@ class Stats
     public function total()
     {
         if ($this->db) {
+            $query = "
+                SELECT count(*) AS `total`
+                FROM `stats`
+                WHERE NOT (
+                    UPPER(`url`) LIKE '%LOCALHOST%'
+                    OR `url` LIKE '%127.0.0.1%'
+                )
+            ";
 
-            return $this->db->query('SELECT count(*) AS `total` FROM `stats`')->fetch(PDO::FETCH_ASSOC)['total'];
+            return $this->db->query($query)->fetch(PDO::FETCH_ASSOC)['total'];
         }
 
         return 0;
@@ -425,10 +482,14 @@ class Stats
         $total = 1;
 
         if ($this->db) {
-            $query = '
+            $query = "
                 SELECT count(*) AS `total`
                 FROM `stats_platform`
-            ';
+                WHERE NOT (
+                    UPPER(`url`) LIKE '%LOCALHOST%'
+                    OR `url` LIKE '%127.0.0.1%'
+                )
+            ";
             $result = $this->db->query($query)->fetch(PDO::FETCH_ASSOC);
 
             if (isset($result['total']) && is_numeric($result['total'])) {
