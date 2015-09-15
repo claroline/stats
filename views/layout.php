@@ -81,9 +81,9 @@
                     <button class="btn btn-default" id="refresh-datas-btn">
                         Refresh
                     </button>
-<!--                    <button class="btn btn-default">
-                        CSV export
-                    </button>-->
+                    <button class="btn btn-default" id="excel-export-btn">
+                        Excel export
+                    </button>
                 </span>
                 <br>
                 <br>
@@ -200,6 +200,10 @@
                 },
                 2000
             );
+        });
+
+        $('#excel-export-btn').on('click', function () {
+            document.location.href = 'index.php?excel';
         });
     </script>
 </body>
