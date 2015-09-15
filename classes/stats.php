@@ -116,6 +116,52 @@ class Stats
     }
 
     /**
+     * Get localhost stats entries
+     */
+    public function getLocalHostStats()
+    {
+        if ($this->db) {
+            $query = "
+                SELECT *
+                FROM `stats_platform`
+                WHERE UPPER(`url`) LIKE '%LOCALHOST%'
+                OR `url` LIKE '%127.0.0.1%'
+                ORDER BY `date` DESC
+                LIMIT 500
+            ";
+
+            return $this->db->query($query)->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+
+            return null;
+        }
+    }
+
+    /**
+     * Get non-localhost stats entries
+     */
+    public function getNonLocalHostStats()
+    {
+        if ($this->db) {
+            $query = "
+                SELECT *
+                FROM `stats_platform`
+                WHERE NOT (
+                    UPPER(`url`) LIKE '%LOCALHOST%'
+                    OR `url` LIKE '%127.0.0.1%'
+                )
+                ORDER BY `date` DESC
+                LIMIT 500
+            ";
+
+            return $this->db->query($query)->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+
+            return null;
+        }
+    }
+
+    /**
      * Count field, as version, lang, country or month from 'stats' table
      */
     public function countField($field, $timed = false, $year = null)

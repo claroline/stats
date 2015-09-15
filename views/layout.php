@@ -60,27 +60,83 @@
         </div>
     </div>
     <br>
-    <table class="table table-striped table-bordered">
-        <tr>
-            <th>Date</th>
-            <th>Url</th>
-            <th>Ip</th>
-            <th>Lang</th>
-            <th>Country</th>
-            <th>Email</th>
-            <th>CoreBundle version</th>
-            <th>Workspaces</th>
-            <th>Users</th>
-            <th>Type</th>
-            <th>Active</th>
-        </tr>
-        <?php
-        foreach ($stats->getStats() as $stat) {
-            extract($stat);
-            include('views/row.php');
-        }
-        ?>
-    </table>
+
+    <div class="col-md-12">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#non-localhost" aria-controls="non-localhost" role="tab" data-toggle="tab">
+                    Platforms
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#localhost" aria-controls="localhost" role="tab" data-toggle="tab">
+                    Localhost
+                </a>
+            </li>
+        </ul>
+        <br>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="non-localhost">
+                <span class="pull-right btn-group">
+                    <button class="btn btn-default" id="refresh-datas-btn">
+                        Refresh
+                    </button>
+<!--                    <button class="btn btn-default">
+                        CSV export
+                    </button>-->
+                </span>
+                <br>
+                <br>
+                <br>
+                <table class="table table-striped table-bordered">
+                    <tr>
+                        <th>Date</th>
+                        <th>Url</th>
+                        <th>Ip</th>
+                        <th>Lang</th>
+                        <th>Country</th>
+                        <th>Email</th>
+                        <th>CoreBundle version</th>
+                        <th>Workspaces</th>
+                        <th>Users</th>
+                        <th>Type</th>
+                        <th>Active</th>
+                    </tr>
+                    <?php
+                    foreach ($stats->getNonLocalHostStats() as $stat) {
+                        extract($stat);
+                        include('views/row.php');
+                    }
+                    ?>
+                </table>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="localhost">
+                <table class="table table-striped table-bordered">
+                    <tr>
+                        <th>Date</th>
+                        <th>Url</th>
+                        <th>Ip</th>
+                        <th>Lang</th>
+                        <th>Country</th>
+                        <th>Email</th>
+                        <th>CoreBundle version</th>
+                        <th>Workspaces</th>
+                        <th>Users</th>
+                        <th>Type</th>
+                        <th>Active</th>
+                    </tr>
+                    <?php
+                    foreach ($stats->getLocalHostStats() as $stat) {
+                        extract($stat);
+                        include('views/row.php');
+                    }
+                    ?>
+                </table>
+            </div>
+        </div>
+        <br>
+        <br>
+    </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/js/stats.js"></script>
@@ -123,6 +179,27 @@
 
         $('#year').on('change', function () {
             document.location.href = 'index.php?year=' + this.value;
+        });
+
+        $('#refresh-datas-btn').on('click', function () {
+            var platforms = <?php echo json_encode($stats->getNonLocalHostStats()); ?>;
+
+            for (var i = 0; i < platforms.length; i++) {
+                var url = platforms[i]['url'] +
+                    '/admin/parameters/send/datas/token/' +
+                    platforms[i]['token'];
+
+                $.ajax({
+                    url: url,
+                    type: 'GET'
+                });
+            }
+            setTimeout(
+                function () {
+                    window.location.reload();
+                },
+                2000
+            );
         });
     </script>
 </body>

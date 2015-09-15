@@ -32,10 +32,10 @@ if (!filter_var($_POST['ip'], FILTER_VALIDATE_IP)) {
 	echo "The ip {$_POST['ip']} is not valid";
 	die();
 }
-if (!filter_var($_POST['url'], FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED)) {
-	echo "The url {$_POST['url']} is not valid";
-	die();
-}
+//if (!filter_var($_POST['url'], FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED)) {
+//	echo "The url {$_POST['url']} is not valid";
+//	die();
+//}
 
 if (!preg_match('/^(http:\/\/)?localhost/', $_POST['url']) === 0) {
 	echo 'localhost is not allowed as an url';
