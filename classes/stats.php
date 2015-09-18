@@ -638,11 +638,21 @@ class Stats
         if ($this->db) {
             extract($this->array2utf8(get_defined_vars()));
 
-            $this->db->query(
-                "INSERT INTO `stats_platform` (
-                    `id`, `ip`, `platform_name`, `url`, `lang`, `country`, `email`, `version`, `workspaces`, `personal_workspaces`,`users`, `stats_type`, `token`, `active`, `date`
-                ) VALUES (NULL, '$ip', '$name', '$url', '$lang', '$country', '$email', '$version', '$workspaces', '$personalWorkspaces', '$users', '$statsType', '$token', '1','$date')"
-            );
+            $localhost = strstr($url, 'localhost');
+
+            if (!$localhost) {
+                $this->db->query(
+                    "INSERT INTO `stats_platform` (
+                        `id`, `ip`, `platform_name`, `url`, `lang`, `country`, `email`, `version`, `workspaces`, `personal_workspaces`,`users`, `stats_type`, `token`, `active`, `date`
+                    ) VALUES (NULL, '$ip', '$name', '$url', '$lang', '$country', '$email', '$version', '$workspaces', '$personalWorkspaces', '$users', '$statsType', '$token', '1','$date')"
+                );
+            } else {
+                $this->db->query(
+                    "INSERT INTO `stats_platform` (
+                        `id`, `ip`, `platform_name`, `url`, `lang`, `country`, `email`, `version`, `workspaces`, `personal_workspaces`,`users`, `stats_type`, `token`, `active`, `date`, `is_prod`
+                    ) VALUES (NULL, '$ip', '$name', '$url', '$lang', '$country', '$email', '$version', '$workspaces', '$personalWorkspaces', '$users', '$statsType', '$token', '1','$date', '0')"
+                );
+            }
         }
     }
 
