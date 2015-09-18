@@ -1,3 +1,9 @@
+<?php
+    if (!is_null($platformId) && !is_null($isProd)) {
+        $stats->changePlatformType($platformId, $isProd);
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +76,7 @@
             </li>
             <li role="presentation">
                 <a href="#localhost" aria-controls="localhost" role="tab" data-toggle="tab">
-                    Localhost
+                    Tests
                 </a>
             </li>
         </ul>
@@ -101,9 +107,10 @@
                         <th>Users</th>
                         <th>Type</th>
                         <th>Active</th>
+                        <th>Actions</th>
                     </tr>
                     <?php
-                    foreach ($stats->getNonLocalHostStats() as $stat) {
+                    foreach ($stats->getProdPlatforms() as $stat) {
                         extract($stat);
                         include('views/row.php');
                     }
@@ -124,9 +131,10 @@
                         <th>Users</th>
                         <th>Type</th>
                         <th>Active</th>
+                        <th>Actions</th>
                     </tr>
                     <?php
-                    foreach ($stats->getLocalHostStats() as $stat) {
+                    foreach ($stats->getTestPlatforms() as $stat) {
                         extract($stat);
                         include('views/row.php');
                     }
@@ -182,7 +190,7 @@
         });
 
         $('#refresh-datas-btn').on('click', function () {
-            var platforms = <?php echo json_encode($stats->getNonLocalHostStats()); ?>;
+            var platforms = <?php echo json_encode($stats->getProdPlatforms()); ?>;
 
             for (var i = 0; i < platforms.length; i++) {
                 var url = platforms[i]['url'] +
@@ -204,6 +212,13 @@
 
         $('#excel-export-btn').on('click', function () {
             document.location.href = 'index.php?excel';
+        });
+
+        $('.swith-platform-btn').on('click', function () {
+            var platformId = $(this).data('platform-id');
+            var prod = $(this).data('prod');
+            var switchedValue = (prod + 1) % 2;
+            document.location.href = 'index.php?platformId=' + platformId + '&isProd=' + switchedValue;
         });
     </script>
 </body>

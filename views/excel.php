@@ -20,7 +20,7 @@
         <th>Active</th>
     </tr>
     <?php
-    foreach ($stats->getNonLocalHostStats() as $stat) {
+    foreach ($stats->getProdPlatforms() as $stat) {
         extract($stat);
         include('views/row.php');
     }
@@ -30,7 +30,7 @@
 <br>
 <br>
 
-<h1>localhost</h1>
+<h1>Tests</h1>
 <table class="table table-striped table-bordered">
     <tr>
         <th>Date</th>
@@ -46,7 +46,7 @@
         <th>Active</th>
     </tr>
     <?php
-    foreach ($stats->getLocalHostStats() as $stat) {
+    foreach ($stats->getTestPlatforms() as $stat) {
         extract($stat);
         include('views/row.php');
     }

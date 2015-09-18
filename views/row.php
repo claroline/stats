@@ -26,4 +26,19 @@
     <td><?php $stats->show($users); ?></td>
     <td><?php $stats->show($stats_type); ?></td>
     <td><?php $stats->show($active); ?></td>
+
+    <?php
+        if (!$excel) {
+            echo "
+                <td>
+                    <button class='btn btn-primary btn-sm swith-platform-btn'
+                            data-platform-id='$id'
+                            data-prod='$is_prod'
+                    >
+                        Prod / Test
+                    </button>
+                </td>
+            ";
+        }
+    ?>
 </tr>

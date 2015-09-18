@@ -37,7 +37,12 @@ CREATE TABLE IF NOT EXISTS `stats_platform` (
   `token` VARCHAR(255),
   `active` TINYINT(1) NOT NULL,
   `date` DATETIME NOT NULL,
+  `is_prod` TINYINT(1) DEFAULT '1' NOT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;
 
 ALTER TABLE `stats_platform` ADD UNIQUE (`url`);
+
+-- TO UPDATE DATABASE
+
+ALTER TABLE `stats_platform` ADD `is_prod` TINYINT(1) DEFAULT '1' NOT NULL;

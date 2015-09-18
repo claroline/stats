@@ -116,17 +116,15 @@ class Stats
     }
 
     /**
-     * Get localhost stats entries
+     * Get test platforms entries
      */
-    public function getLocalHostStats()
+    public function getTestPlatforms()
     {
         if ($this->db) {
             $query = "
                 SELECT *
                 FROM `stats_platform`
-                WHERE UPPER(`url`) LIKE '%LOCALHOST%'
-                OR `url` LIKE '%127.0.0.1%'
-                ORDER BY `date` DESC
+                WHERE `is_prod` IS FALSE
                 LIMIT 500
             ";
 
@@ -138,18 +136,15 @@ class Stats
     }
 
     /**
-     * Get non-localhost stats entries
+     * Get prod platforms entries
      */
-    public function getNonLocalHostStats()
+    public function getProdPlatforms()
     {
         if ($this->db) {
             $query = "
                 SELECT *
                 FROM `stats_platform`
-                WHERE NOT (
-                    UPPER(`url`) LIKE '%LOCALHOST%'
-                    OR `url` LIKE '%127.0.0.1%'
-                )
+                WHERE `is_prod` IS TRUE
                 ORDER BY `date` DESC
                 LIMIT 500
             ";
@@ -169,9 +164,10 @@ class Stats
         $query = "
             SELECT `$field`, COUNT(*) AS `number`
             FROM `stats`
-            WHERE NOT (
-                UPPER(`url`) LIKE '%LOCALHOST%'
-                OR `url` LIKE '%127.0.0.1%'
+            WHERE `url` IN (
+                SELECT `url`
+                FROM `stats_platform`
+                WHERE `is_prod` IS TRUE
             )
             GROUP BY `$field`
             ORDER BY `number` DESC
@@ -180,9 +176,10 @@ class Stats
         if ($field === 'month') {
             $query = "SELECT MONTHNAME(`date`) AS `month`, COUNT(*) AS `number`
                       FROM `stats`
-                      WHERE NOT (
-                          UPPER(`url`) LIKE '%LOCALHOST%'
-                          OR `url` LIKE '%127.0.0.1%'
+                      WHERE `url` IN (
+                          SELECT `url`
+                          FROM `stats_platform`
+                          WHERE `is_prod` IS TRUE
                       )
                       GROUP BY `month`
                       ORDER BY `number` DESC";
@@ -193,9 +190,10 @@ class Stats
                 SELECT DATE_FORMAT(`date`, '%b') AS `month`, `$field`, COUNT(*) as `number`
                 FROM `stats`
                 WHERE YEAR(`date`) = '$year'
-                AND NOT (
-                    UPPER(`url`) LIKE '%LOCALHOST%'
-                    OR `url` LIKE '%127.0.0.1%'
+                AND `url` IN (
+                    SELECT `url`
+                    FROM `stats_platform`
+                    WHERE `is_prod` IS TRUE
                 )
                 GROUP BY `month`, `$field` ORDER BY `month`
             ";
@@ -218,10 +216,7 @@ class Stats
         $query = "
             SELECT `$field`, COUNT(*) AS `number`
             FROM `stats_platform`
-            WHERE NOT (
-                UPPER(`url`) LIKE '%LOCALHOST%'
-                OR `url` LIKE '%127.0.0.1%'
-            )
+            WHERE `is_prod` IS TRUE
             GROUP BY `$field`
             ORDER BY `number` DESC
         ";
@@ -230,10 +225,7 @@ class Stats
             $query = "
                 SELECT MONTHNAME(`date`) AS `month`, COUNT(*) AS `number`
                 FROM `stats_platform`
-                WHERE NOT (
-                    UPPER(`url`) LIKE '%LOCALHOST%'
-                    OR `url` LIKE '%127.0.0.1%'
-                )
+                WHERE `is_prod` IS TRUE
                 GROUP BY `month`
                 ORDER BY `number` DESC
             ";
@@ -244,10 +236,7 @@ class Stats
                 SELECT DATE_FORMAT(`date`, '%b') AS `month`, `$field`, COUNT(*) as `number`
                 FROM `stats_platform`
                 WHERE YEAR(`date`) = '$year'
-                AND NOT (
-                    UPPER(`url`) LIKE '%LOCALHOST%'
-                    OR `url` LIKE '%127.0.0.1%'
-                )
+                AND `is_prod` IS TRUE
                 GROUP BY `month`, `$field`
                 ORDER BY `month`
             ";
@@ -274,10 +263,7 @@ class Stats
                 AND `url` IN (
                     SELECT `url`
                     FROM `stats_platform`
-                    WHERE NOT (
-                        UPPER(`url`) LIKE '%LOCALHOST%'
-                        OR `url` LIKE '%127.0.0.1%'
-                    )
+                    WHERE `is_prod` IS TRUE
                 )
             ";
             $result = $this->db->query($query)->fetch(PDO::FETCH_ASSOC);
@@ -299,6 +285,11 @@ class Stats
             SELECT DATE_FORMAT(`date`, '%b') AS `month`, SUM(`$field`) as `number`
             FROM `stats` s
             WHERE YEAR(s.`date`) = '$year'
+            AND s.`url` IN (
+                SELECT `url`
+                FROM `stats_platform`
+                WHERE `is_prod` IS TRUE
+            )
             AND NOT EXISTS (
                 SELECT *
                 FROM `stats` ss
@@ -306,10 +297,11 @@ class Stats
                 AND YEAR(ss.`date`) = '$year'
                 AND MONTH(ss.`date`) = MONTH(s.`date`)
                 AND ss.`date` > s.`date`
-            )
-            AND NOT (
-                UPPER(`url`) LIKE '%LOCALHOST%'
-                OR `url` LIKE '%127.0.0.1%'
+                AND ss.`url` IN (
+                    SELECT `url`
+                    FROM `stats_platform`
+                    WHERE `is_prod` IS TRUE
+                )
             )
             GROUP BY `month`
             ORDER BY `month`
@@ -332,9 +324,10 @@ class Stats
             SELECT DATE_FORMAT(`date`, '%b') AS `month`, `$field`, COUNT(DISTINCT `url`) as `number`
             FROM `stats`
             WHERE YEAR(`date`) = '$year'
-            AND NOT (
-                UPPER(`url`) LIKE '%LOCALHOST%'
-                OR `url` LIKE '%127.0.0.1%'
+            AND `url` IN (
+                SELECT `url`
+                FROM `stats_platform`
+                WHERE `is_prod` IS TRUE
             )
             GROUP BY `month`, `$field`
             ORDER BY `month`
@@ -357,9 +350,10 @@ class Stats
             SELECT DATE_FORMAT(`date`, '%b') AS `month`, COUNT(DISTINCT `url`) as `number`
             FROM `stats`
             WHERE YEAR(`date`) = '$year'
-            AND NOT (
-                UPPER(`url`) LIKE '%LOCALHOST%'
-                OR `url` LIKE '%127.0.0.1%'
+            AND `url` IN (
+                SELECT `url`
+                FROM `stats_platform`
+                WHERE `is_prod` IS TRUE
             )
             GROUP BY `month`
             ORDER BY `month`
@@ -462,9 +456,10 @@ class Stats
             $query = "
                 SELECT count(*) AS `total`
                 FROM `stats`
-                WHERE NOT (
-                    UPPER(`url`) LIKE '%LOCALHOST%'
-                    OR `url` LIKE '%127.0.0.1%'
+                WHERE `url` IN (
+                    SELECT `url`
+                    FROM `stats_platform`
+                    WHERE `is_prod` IS TRUE
                 )
             ";
 
@@ -485,10 +480,7 @@ class Stats
             $query = "
                 SELECT count(*) AS `total`
                 FROM `stats_platform`
-                WHERE NOT (
-                    UPPER(`url`) LIKE '%LOCALHOST%'
-                    OR `url` LIKE '%127.0.0.1%'
-                )
+                WHERE `is_prod` IS TRUE
             ";
             $result = $this->db->query($query)->fetch(PDO::FETCH_ASSOC);
 
@@ -582,6 +574,19 @@ class Stats
 
             $this->db->query(
                 "DELETE FROM `stats_platform`
+                 WHERE `id` = $id"
+            );
+        }
+    }
+
+    public function changePlatformType($id, $isProd)
+    {
+        if ($this->db) {
+            extract($this->array2utf8(get_defined_vars()));
+
+            $this->db->query(
+                "UPDATE `stats_platform`
+                 SET `is_prod` = '$isProd'
                  WHERE `id` = $id"
             );
         }
