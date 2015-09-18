@@ -10,11 +10,7 @@ if (!$stats->checkParameters(
         $_POST,
         array(
             'ip',
-            'name',
             'url',
-            'lang',
-            'country',
-            'email',
             'version',
             'workspaces',
             'personal_workspaces',
@@ -27,6 +23,11 @@ if (!$stats->checkParameters(
 	echo 'Some parameters where missing'; 
 	die();
 }
+
+$name = isset($_POST['name']) && !empty($_POST['name']) ? $_POST['name'] : '-';
+$lang = isset($_POST['lang']) && !empty($_POST['lang']) ? $_POST['lang'] : '-';
+$country = isset($_POST['country']) && !empty($_POST['country']) ? $_POST['country'] : '-';
+$email = isset($_POST['email']) && !empty($_POST['email']) ? $_POST['email'] : 'nomail@claroline-connect.net';
 
 if (!filter_var($_POST['ip'], FILTER_VALIDATE_IP)) {
 	echo "The ip {$_POST['ip']} is not valid";
@@ -42,10 +43,10 @@ if (!preg_match('/^(http:\/\/)?localhost/', $_POST['url']) === 0) {
 	die();
 }
 
-if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-	echo "The email {$_POST['email']} is not valid";
-	die();
-}
+//if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+//	echo "The email {$_POST['email']} is not valid";
+//	die();
+//}
 
 //if (!preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/', $_POST['version'])) {
 //	echo "The version {$_POST['version']} is not valid";
@@ -75,11 +76,11 @@ if (!is_numeric($_POST['stats_type'])) {
 
 $stats->insert(
 	$_POST['ip'],
-	$_POST['name'],
+	$name,
 	'http://' . $_POST['url'],
-	$_POST['lang'],
-	$_POST['country'],
-	$_POST['email'],
+	$lang,
+	$country,
+	$email,
 	$_POST['version'],
 	$_POST['workspaces'],
 	$_POST['personal_workspaces'],
