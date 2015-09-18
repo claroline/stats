@@ -183,7 +183,7 @@
             new CanvasJS.Chart(
                 'workspacesTimed', new stat('workspacesTimed', 'Number of workspaces ' + year).column(nbWorkspacesTimed, '#C24642')
             ).render();
-        }
+        };
 
         $('#year').on('change', function () {
             document.location.href = 'index.php?year=' + this.value;
