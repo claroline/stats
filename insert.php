@@ -47,10 +47,10 @@ if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
 	die();
 }
 
-if (!preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/', $_POST['version'])) {
-	echo "The version {$_POST['version']} is not valid";
-	die();
-}
+//if (!preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/', $_POST['version'])) {
+//	echo "The version {$_POST['version']} is not valid";
+//	die();
+//}
 
 if (!is_numeric($_POST['workspaces'])) {
 	echo "The number of workspaces {$_POST['workspaces']} is not an integer";
