@@ -9,7 +9,6 @@ $stats = new Stats($config);
 if (!$stats->checkParameters(
         $_POST,
         array(
-            'ip',
             'url',
             'version',
             'workspaces',
@@ -24,15 +23,16 @@ if (!$stats->checkParameters(
 	die();
 }
 
+$ip = isset($_POST['ip']) && !empty($_POST['ip']) ? $_POST['ip'] : '-';
 $name = isset($_POST['name']) && !empty($_POST['name']) ? $_POST['name'] : '-';
 $lang = isset($_POST['lang']) && !empty($_POST['lang']) ? $_POST['lang'] : '-';
 $country = isset($_POST['country']) && !empty($_POST['country']) ? $_POST['country'] : '-';
 $email = isset($_POST['email']) && !empty($_POST['email']) ? $_POST['email'] : 'nomail@claroline-connect.net';
 
-if (!filter_var($_POST['ip'], FILTER_VALIDATE_IP)) {
-	echo "The ip {$_POST['ip']} is not valid";
-	die();
-}
+//if (!filter_var($_POST['ip'], FILTER_VALIDATE_IP)) {
+//	echo "The ip {$_POST['ip']} is not valid";
+//	die();
+//}
 //if (!filter_var($_POST['url'], FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED)) {
 //	echo "The url {$_POST['url']} is not valid";
 //	die();
@@ -75,7 +75,7 @@ if (!is_numeric($_POST['stats_type'])) {
 	
 
 $stats->insert(
-	$_POST['ip'],
+	$ip,
 	$name,
 	'http://' . $_POST['url'],
 	$lang,

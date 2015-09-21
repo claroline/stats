@@ -125,6 +125,7 @@ class Stats
                 SELECT *
                 FROM `stats_platform`
                 WHERE `is_prod` IS FALSE
+                ORDER BY `date` DESC
                 LIMIT 500
             ";
 
@@ -675,23 +676,42 @@ class Stats
         if ($this->db) {
             extract($this->array2utf8(get_defined_vars()));
 
-            $this->db->query(
-                "UPDATE `stats_platform`
-                 SET `ip` = '$ip',
-                     `platform_name` = '$name',
-                     `lang` = '$lang',
-                     `country` = '$country',
-                     `email` = '$email',
-                     `version` = '$version',
-                     `workspaces` = '$workspaces',
-                     `personal_workspaces` = '$personalWorkspaces',
-                     `users` = '$users',
-                     `stats_type` = '$statsType',
-                     `token` = '$token',
-                     `active` = '1',
-                     `date` = '$date'
-                 WHERE `url` = '$url'"
-            );
+            if ($ip === '-') {
+                $this->db->query(
+                    "UPDATE `stats_platform`
+                     SET `platform_name` = '$name',
+                         `lang` = '$lang',
+                         `country` = '$country',
+                         `email` = '$email',
+                         `version` = '$version',
+                         `workspaces` = '$workspaces',
+                         `personal_workspaces` = '$personalWorkspaces',
+                         `users` = '$users',
+                         `stats_type` = '$statsType',
+                         `token` = '$token',
+                         `active` = '1',
+                         `date` = '$date'
+                     WHERE `url` = '$url'"
+                );
+            } else {
+                $this->db->query(
+                    "UPDATE `stats_platform`
+                     SET `ip` = '$ip',
+                         `platform_name` = '$name',
+                         `lang` = '$lang',
+                         `country` = '$country',
+                         `email` = '$email',
+                         `version` = '$version',
+                         `workspaces` = '$workspaces',
+                         `personal_workspaces` = '$personalWorkspaces',
+                         `users` = '$users',
+                         `stats_type` = '$statsType',
+                         `token` = '$token',
+                         `active` = '1',
+                         `date` = '$date'
+                     WHERE `url` = '$url'"
+                );
+            }
         }
     }
 }
